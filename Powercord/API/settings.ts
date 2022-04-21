@@ -3,8 +3,7 @@ import API from "../../NodeMod/powercord/entities/API";
 
 import store from "./settingsStore/store";
 import * as actions from "./settingsStore/actions";
-
-import Logger from "../../Common/Logger";
+import { Logger } from "@rikka/API/Utils/logger";
 
 export = class SettingsAPI extends API {
     store = store;

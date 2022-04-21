@@ -3,7 +3,7 @@ import { existsSync } from "fs";
 import { join } from "path";
 import { promisify } from "util";
 import cp from "child_process";
-import Logger from "../../../Common/Logger";
+import { Logger } from "@rikka/API/Utils";
 const exec = promisify(cp.exec);
 
 export = class Updatable extends Events {

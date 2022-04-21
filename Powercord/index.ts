@@ -3,10 +3,10 @@ import { join } from "path";
 import * as pkg from "../package.json"
 import Updatable from "../NodeMod/powercord/entities/Updatable";
 import APIManager from "./managers/API";
-import Logger from "../Common/Logger";
 import modules from "./modules";
 import styleManager from "./managers/styleManager";
 import Webpack from "../powercord-git/src/fake_node_modules/powercord/webpack";
+import { Logger } from "@rikka/API/Utils/logger";
 
 let hide_rikka = false;
 

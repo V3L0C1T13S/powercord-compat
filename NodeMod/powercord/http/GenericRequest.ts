@@ -1,4 +1,3 @@
-import Logger from "../../../Common/Logger";
 import Constants from "../constants";
 import https from "https";
 import http from "http";

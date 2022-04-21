@@ -1,5 +1,5 @@
+import { Logger } from "@rikka/API/Utils/logger";
 import PluginsManager from "../../../../Rikka/managers/Plugins";
-import Logger from "../../Common/Logger";
 import API from "../../NodeMod/powercord/entities/API";
 
 export = class CommandsAPI extends API {
@@ -47,7 +47,7 @@ export = class CommandsAPI extends API {
             ...command,
             origin
         });
-        Logger.trace(`Registered command ${command.command}`);
+        Logger.log(`Registered command ${command.command}`);
     }
 
     /**

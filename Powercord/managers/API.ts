@@ -1,6 +1,6 @@
 import { readdirSync, statSync } from "fs";
 import { join, resolve } from "path";
-import Logger from "../../Common/Logger";
+import { Logger } from "@rikka/API/Utils/logger";
 
 export default class APIManager {
     private apiDir = join(__dirname, '..', 'API');

@@ -2,7 +2,7 @@ import { existsSync, mkdirSync } from "fs";
 import { join } from "path";
 import RikkaPlugin from "@rikka/Common/entities/Plugin";
 import { RikkaPowercord } from "./Common/Constants";
-import Logger from "./Common/Logger";
+import { Logger } from "@rikka/API/Utils";
 import pkg from "./package.json";
 
 export default class PowercordCompat extends RikkaPlugin {

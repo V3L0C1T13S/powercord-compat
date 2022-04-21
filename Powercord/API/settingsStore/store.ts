@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "fs";
 import { join } from "path";
-import Logger from "../../../Common/Logger";
+import { Logger } from "@rikka/API/Utils/logger";
 import constants from "../../../NodeMod/powercord/constants";
 import ActionTypes from "./constants";
 const { Flux, FluxDispatcher } = require('powercord/webpack');
