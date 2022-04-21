@@ -1,8 +1,6 @@
 require("./polyfills");
 
 if (global.NEW_BACKEND) {
-  Object.defineProperty(window, '_', { get: () => require('powercord/webpack').proxiedWindow._ });
-
   const getFunctions = [
     ["querySelector", false],
     ["querySelectorAll", true],
