@@ -11,7 +11,7 @@ export default class PowercordCompat extends RikkaPlugin {
         description: "Adds Powercord support to Rikka",
         author: "V3L0C1T13S",
         version: pkg.version,
-        license: "MIT",
+        license: "Apache-2.0",
         dependencies: []
     }
 
