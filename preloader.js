@@ -1,4 +1,4 @@
-require("./polyfills");
+require("./src/polyfills");
 
 if (global.NEW_BACKEND) {
   const getFunctions = [

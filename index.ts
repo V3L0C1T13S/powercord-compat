@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync } from "fs";
 import { join } from "path";
 import RikkaPlugin from "@rikka/Common/entities/Plugin";
-import { RikkaPowercord } from "./Common/Constants";
+import { RikkaPowercord } from "./src/Common/Constants";
 import { Logger } from "@rikka/API/Utils";
 import pkg from "./package.json";
 
@@ -17,8 +17,8 @@ export default class PowercordCompat extends RikkaPlugin {
 
     private powercord?: any;
 
-    private powercord_modules_directory = join(__dirname, 'powercord-git', 'src', 'fake_node_modules');
-    private placein_modules_directory = join(__dirname, 'NodeMod');
+    private powercord_modules_directory = join(__dirname, 'src', 'powercord-git', 'src', 'fake_node_modules');
+    private placein_modules_directory = join(__dirname, 'src', 'NodeMod');
 
     private experimentalPreload: boolean = true;
 
@@ -41,7 +41,7 @@ export default class PowercordCompat extends RikkaPlugin {
 
     preInject() {
         console.log("Powercord compat preinjecting...");
-        require("./ipc/main");
+        require("./src/ipc/main");
         console.log("Done preinjecting Powercord compat!");
     }
 
@@ -49,7 +49,7 @@ export default class PowercordCompat extends RikkaPlugin {
         console.log("Powercord compat is enabled!");
 
         this.setGlobals();
-        require("./ipc/renderer");
+        require("./src/ipc/renderer");
 
         // Place-ins are pushed first so they can override the Powercord modules
         require('module').Module.globalPaths.push(this.placein_modules_directory);
@@ -65,11 +65,11 @@ export default class PowercordCompat extends RikkaPlugin {
 
         // Might be assigned already
         if (this.powercord) {
-            Logger.trace("Powercord already initialized");
+            Logger.warn("Powercord already initialized");
             return;
         }
 
-        const Powercord = require("./Powercord");
+        const Powercord = require("./src/Powercord");
         global.powercord = new Powercord.default(false);
         this.powercord = global.powercord;
     }
