@@ -1,3 +1,4 @@
+import { Logger } from "@rikka/API/Utils";
 import { readdirSync } from "fs";
 import { join, resolve } from "path";
 import Plugin from "../../NodeMod/powercord/entities/Plugin";
@@ -23,7 +24,7 @@ export default class PCPluginsManager {
     }
 
     static getPluginDirectory() {
-        return resolve(join(__dirname, '..', '..'), 'plugins');
+        return resolve(join(__dirname, '..'), 'plugins');
     }
 
     mountPlugin(pluginName: string) {
@@ -39,12 +40,11 @@ export default class PCPluginsManager {
                     }
                 }
             })
-            console.log(`Mounting ${resolve(this.pluginDir, pluginName)}`);
             if (!pluginClass) throw new Error(`Failed to mount plugin: ${pluginName}`);
 
             this.plugins.set(pluginName, plugin);
         } catch (e) {
-            console.error(`Failed to mount plugin: ${pluginName}. ${e}`);
+            Logger.error(`Failed to mount plugin: ${pluginName}. ${e}`);
         }
     }
 

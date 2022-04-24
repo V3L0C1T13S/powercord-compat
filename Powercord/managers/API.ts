@@ -8,14 +8,13 @@ export default class APIManager {
 
     mount(filename: string) {
         try {
-            Logger.trace(`Mounting API ${filename}`);
             const apiClass = require(resolve(this.apiDir, filename));
             const api = filename.replace(/\.js$/, '');
             powercord.api[api] = new apiClass();
 
             this.apis.push(api);
         } catch (e) {
-            Logger.trace(`Failed to mount API: ${filename}. ${e}`);
+            Logger.warn(`Failed to mount API: ${filename}. ${e}`);
         }
     }
 
