@@ -1,3 +1,4 @@
+import { Logger } from "@rikka/API/Utils";
 import { existsSync } from "fs";
 import { join } from "path";
 import { resolveCompiler } from "../../../powercord-git/src/fake_node_modules/powercord/compilers";
@@ -9,9 +10,49 @@ export = class Plugin extends Updatable {
     ready = false;
     styles: any = {};
     settings = powercord.api.settings.buildCategoryObject(this.entityID);
+    manifest = {
+        dependencies: [],
+        optionalDependencies: []
+    };
 
     constructor() {
         super(PCPluginsManager.getPluginDirectory());
+    }
+
+        // Getters
+    get isInternal () {
+        return this.entityID?.startsWith('pc-');
+    }
+
+    get dependencies () {
+        return this.manifest.dependencies;
+    }
+
+    get optionalDependencies () {
+        return this.manifest.optionalDependencies;
+    }
+
+    get effectiveOptionalDependencies () {
+        const deps = this.manifest.optionalDependencies;
+        const disabled = powercord.settings.get('disabledPlugins', []);
+        return deps.filter(d => powercord.pluginManager.get(d) !== void 0 && !disabled.includes(d));
+    }
+
+    get allDependencies () {
+        return this.dependencies.concat(this.optionalDependencies);
+    }
+
+    get allEffectiveDependencies () {
+        return this.dependencies.concat(this.effectiveOptionalDependencies);
+    }
+
+    get dependents () {
+        const dependents = [ ...powercord.pluginManager.plugins.values() ].filter(p => p.manifest.dependencies.includes(this.entityID));
+        return [ ...new Set(dependents.map(d => d.entityID).concat(...dependents.map(d => d.dependents))) ];
+      }
+
+    get color () {
+    return '#7289da';
     }
 
     async _unload() {
@@ -66,11 +107,27 @@ export = class Plugin extends Updatable {
         return compile();
     }
 
+    
+    protected log = (...args: any[]) => Logger.trace(...args);
+
+    protected warn = (...args: any[]) => Logger.trace(`[WARN] ${this.entityID}`, ...args);
+
+    protected error = (...args: any[]) => Logger.trace(`[ERROR] ${this.entityID}`, ...args);
+
     async pluginWillUnload() {}
 
     _load() {
         this.startPlugin();
     }
+
+    // Update
+  async _update (force = false) {
+    const success = await super._update(force);
+    if (success && this.ready) {
+      await powercord.pluginManager.remount(this.entityID);
+    }
+    return success;
+  }
 
     startPlugin() {}
 }

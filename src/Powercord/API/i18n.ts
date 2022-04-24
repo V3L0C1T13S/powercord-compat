@@ -7,11 +7,6 @@ export = class I18nAPI extends API {
     locale: string = "en";
     messages: { [key: string]: { [key: string]: string } } = {};
 
-    constructor() {
-        super();
-
-    }
-
     async startAPI() {
         getModule(['locale', 'theme']).then((module: { locale: string; addChangeListener: (arg0: () => void) => void; }) => {
             this.locale = module.locale;
@@ -27,9 +22,25 @@ export = class I18nAPI extends API {
 
     addPowercordStrings() {
         const i18nContextProvider = i18n._provider?._context || i18n._proxyContext;
+        let { messages, defaultMessages } = i18nContextProvider;
 
-        Object.assign(i18nContextProvider.messages, this.messages[this.locale]);
-        Object.assign(i18nContextProvider.defaultMessages, this.messages['en-US']);
+        Object.defineProperty(i18nContextProvider, 'messages', {
+            enumerable: true,
+            get: () => messages,
+            set: (v) => {
+                messages = Object.assign(v, this.messages[this.locale]);
+            }
+        });
+        Object.defineProperty(i18nContextProvider, 'defaultMessages', {
+        enumerable: true,
+        get: () => defaultMessages,
+        set: (v) => {
+            defaultMessages = Object.assign(v, this.messages['en-US']);
+        }
+        });
+    
+        i18nContextProvider.messages = messages;
+        i18nContextProvider.defaultMessages = defaultMessages;
     }
 
     loadAllStrings(locale: string, strings: { [key: string]: string }) {

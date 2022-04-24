@@ -6,11 +6,15 @@ export = class API extends Events {
   ready: boolean = false;
 
   async _load(): Promise<void> {
-    if (typeof this.startAPI === 'function') {
-      await this.startAPI().catch(e => this.error(`api load error: ${e}`));
+    try {
+      if (typeof this.startAPI === 'function') {
+        await this.startAPI();
+      }
+      this.log('API loaded');
+      this.ready = true;
+    } catch (e) {
+      this.error(`An error occurred during initialization!\n${e}`);
     }
-    this.log('API loaded');
-    this.ready = true;
   }
 
   async _unload(): Promise<void> {
