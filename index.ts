@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync } from "fs";
+import { existsSync, mkdirSync, symlinkSync } from "fs";
 import { join } from "path";
 import RikkaPlugin from "@rikka/Common/entities/Plugin";
 import { RikkaPowercord } from "./src/Common/Constants";
@@ -39,6 +39,18 @@ export default class PowercordCompat extends RikkaPlugin {
         global.NEW_BACKEND = true;
     }
 
+    private createSymLink(src: string, dest: string) {
+        if (!existsSync(dest)) {
+            Logger.log(`Creating symlink from ${src} to ${dest}`);
+            try {
+                symlinkSync(src, dest);
+            } catch (e) {
+                Logger.error(`Failed to create symlink from ${src} to ${dest}`);
+                Logger.error(e);
+            }
+        }
+    }
+
     preInject() {
         console.log("Powercord compat preinjecting...");
         require("./src/ipc/main");
@@ -47,6 +59,8 @@ export default class PowercordCompat extends RikkaPlugin {
 
     async inject() {
         console.log("Powercord compat is enabled!");
+
+        this.createSymLink(join(__dirname, "../../../node_modules"), join(__dirname, "./node_modules"));
 
         this.setGlobals();
         require("./src/ipc/renderer");

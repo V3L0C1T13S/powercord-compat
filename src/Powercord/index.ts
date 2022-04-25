@@ -7,11 +7,20 @@ import modules from "./modules";
 import styleManager from "./managers/styleManager";
 import Webpack from "../powercord-git/src/fake_node_modules/powercord/webpack";
 import { Logger } from "@rikka/API/Utils/logger";
+import { sleep } from "@rikka/API/Utils";
+import { get } from "../NodeMod/powercord/http";
+import constants from "../NodeMod/powercord/constants";
+const { shell: { openExternal } } = require('electron');
 
 let hide_rikka = false;
 
+type powercordAccount = {
+    token?: string,
+}
 export default class Powercord extends Updatable {
-    api = new APIManager();
+    api = {};
+
+    apiManager = new APIManager();
 
     pluginManager = new PCPluginsManager();
 
@@ -27,7 +36,7 @@ export default class Powercord extends Updatable {
         revision: '7'
     };
 
-    private account? = null;
+    private account: powercordAccount | null = null;
 
     private isLinking = false;
 
@@ -50,6 +59,7 @@ export default class Powercord extends Updatable {
         this.emit('initializing');
 
         await this.startup();
+        this.fetchAccount();
         //(this.gitInfos = await this.pluginManager.get('pc-updater') as any)?.getGitInfos();
 
         if (this.settings.get('hideToken', true)) {
@@ -67,7 +77,7 @@ export default class Powercord extends Updatable {
     }
 
     async startup() {
-        await this.api.startAPIs();
+        await this.apiManager.startAPIs();
         this.settings = powercord.api.settings.buildCategoryObject('pc-general');
         this.emit('settingsReady');
 
@@ -86,4 +96,55 @@ export default class Powercord extends Updatable {
         }
         return pkg.version;
     }
+
+    async fetchAccount () {
+        if (this.isLinking) {
+          while (this.isLinking) {
+            await sleep(1);
+          }
+          return;
+        }
+    
+        this.isLinking = true;
+        const token = this.settings.get('powercordToken', null);
+        if (token) {
+          const baseUrl = this.settings.get('backendURL', constants.WEBSITE);
+          console.debug('%c[Powercord]', 'color: #7289da', 'Logging in to your account...');
+    
+          const resp = await get(`${baseUrl}/api/v2/users/@me`)
+            .set('Authorization', token)
+            .catch(e => e) as any;
+    
+          if (resp.statusCode === 401) {
+            if (!resp.body.error && resp.body.error !== 'DISCORD_REVOKED') {
+              powercord.api.notices.sendAnnouncement('pc-account-discord-unlinked', {
+                color: 'red',
+                message: 'Your Powercord account is no longer linked to your Discord account! Some integrations will be disabled.',
+                button: {
+                  text: 'Link it back',
+                  onClick: () => openExternal(`${constants.WEBSITE}/api/v2/oauth/discord`)
+                }
+              });
+    
+              this.isLinking = false;
+              return; // keep token stored
+            }
+            this.settings.set('powercordToken', null);
+            this.account = null;
+            this.isLinking = false;
+            return console.error('%c[Powercord]', 'color: #7289da', 'Unable to fetch your account (Invalid token). Removed token from config');
+          } else if (resp.statusCode !== 200) {
+            this.account = null;
+            this.isLinking = false;
+            return console.error('%c[Powercord]', 'color: #7289da', `An error occurred while fetching your account: ${resp.statusCode} - ${resp.statusText}`, resp.body);
+          }
+    
+          this.account = resp.body;
+          this.account!.token = token;
+        } else {
+          this.account = null;
+        }
+        console.debug('%c[Powercord]', 'color: #7289da', 'Logged in!');
+        this.isLinking = false;
+      }
 }

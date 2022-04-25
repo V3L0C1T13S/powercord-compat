@@ -37,6 +37,36 @@ export = class Updatable extends Events {
     this.updateIdentifier = updateIdentifier;
   }
 
+  async _getUpdateCommits () {
+    const abort = new AbortController();
+    const timeout = setTimeout(() => {
+      abort.abort();
+      throw new Error('Timed out.');
+    }, this.update_timeout);
+
+    const branch = await this.getBranch();
+    const commits: { id: string | undefined; author: string | undefined; message: string | undefined; }[] = [];
+
+    const gitLog = await exec(`git log --format="%H -- %an -- %s" ..origin/${branch}`, {
+      cwd: this.entityPath,
+      signal: abort.signal
+    }).then(({ stdout }) => stdout.toString());
+
+    const lines = gitLog.split('\n');
+    lines.pop();
+    lines.forEach(line => {
+      const data = line.split(' -- ');
+      commits.push({
+        id: data.shift(),
+        author: data.shift(),
+        message: data.shift()
+      });
+    });
+
+    clearTimeout(timeout);
+    return commits;
+  }
+
   async _checkForUpdates(): Promise<boolean> {
     Logger.trace("Stub %d", this.entityID);
     return false;
