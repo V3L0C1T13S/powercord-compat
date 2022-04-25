@@ -84,14 +84,14 @@ export default class Powercord extends Updatable {
         const coremods = require('./coremods');
         await coremods.load();
 
-        await this.pluginManager.startPlugins();
+        this.pluginManager.startPlugins();
 
         this.initialized = true;
     }
 
     get rikkapc_version() {
         if (hide_rikka) {
-            Logger.trace("A plugin is trying to access Rikka's version when Rikka is hidden.");
+            Logger.warn("A plugin is trying to access Rikka's version when Rikka is hidden.");
             return;
         }
         return pkg.version;
