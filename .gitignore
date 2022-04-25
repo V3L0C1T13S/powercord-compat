@@ -1,2 +1,2 @@
-Powercord/plugins/*
-!Powercord/plugins/pc-*
+src/Powercord/plugins/*
+!src/Powercord/plugins/pc-*

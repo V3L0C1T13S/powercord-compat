@@ -12,7 +12,8 @@ export = class Plugin extends Updatable {
     settings = powercord.api.settings.buildCategoryObject(this.entityID);
     manifest = {
         dependencies: [],
-        optionalDependencies: []
+        optionalDependencies: [],
+        appMode: 'app',
     };
 
     constructor() {

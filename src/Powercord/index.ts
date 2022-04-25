@@ -84,7 +84,7 @@ export default class Powercord extends Updatable {
         const coremods = require('./coremods');
         await coremods.load();
 
-        await this.pluginManager.loadPlugins();
+        await this.pluginManager.startPlugins();
 
         this.initialized = true;
     }
