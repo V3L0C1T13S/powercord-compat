@@ -57,17 +57,6 @@ export default class PCPluginsManager {
         this.mount(pluginName);
     }
 
-    loadPlugins() {
-        readdirSync(this.pluginDir).forEach(file => this.mount(file));
-        this.plugins.forEach((plugin, name) => {
-            try {
-                this.load(name);
-            } catch (e) {
-                console.error(e);
-            }
-        });
-    }
-
     async unmount (pluginID: string) {
         const plugin = this.get(pluginID);
         if (!plugin) {

@@ -1,6 +1,4 @@
 import API from "../../NodeMod/powercord/entities/API";
-import strings from "../../../i18n";
-import overrides from "../../../i18n/overrides";
 const { getModule, i18n } = require('powercord/webpack');
 
 export = class I18nAPI extends API {
@@ -32,11 +30,11 @@ export = class I18nAPI extends API {
             }
         });
         Object.defineProperty(i18nContextProvider, 'defaultMessages', {
-        enumerable: true,
-        get: () => defaultMessages,
-        set: (v) => {
-            defaultMessages = Object.assign(v, this.messages['en-US']);
-        }
+            enumerable: true,
+            get: () => defaultMessages,
+            set: (v) => {
+                defaultMessages = Object.assign(v, this.messages['en-US']);
+            }
         });
     
         i18nContextProvider.messages = messages;
